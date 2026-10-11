@@ -66,3 +66,23 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+## Building the PDF
+
+The repository ships a generator that renders all 700 verses as a landscape PDF
+with four columns: Sanskrit (Devanagari), IAST transliteration, English
+translation and an empty column for your own notes.
+
+Requirements: Python 3, LuaLaTeX with `latexmk`, `ltablex`, `fontspec`, and the
+fonts *Gentium Plus* and *Noto Serif Devanagari* (Debian/Ubuntu:
+`fonts-sil-gentiumplus fonts-noto-core`).
+
+```sh
+make                       # -> build/bhagavad-gita.pdf (Swami Sivananda)
+make TRANSLATOR=purohit    # other translators: siva, purohit, gambir, adi, san, prabhu
+make clean
+```
+
+The GitHub Actions workflow in `.github/workflows/build.yml` builds the PDF on
+every push and pull request, uploads it as an artifact, and attaches it to the
+release when a `v*` tag is pushed.

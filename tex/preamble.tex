@@ -1,0 +1,61 @@
+% Shared preamble for the Bhagavad Gita PDF (LuaLaTeX)
+\documentclass[10pt,a4paper,landscape]{article}
+\usepackage[landscape,margin=14mm,top=16mm,bottom=16mm]{geometry}
+\usepackage{fontspec}
+\usepackage{ltablex}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{fancyhdr}
+\usepackage{ragged2e}
+\usepackage[hidelinks]{hyperref}
+
+\setmainfont{Gentium Plus}
+\newfontfamily\devanagarifont{Noto Serif Devanagari}[Script=Devanagari]
+\newcommand{\sanskrit}{\devanagarifont}
+\newcommand{\iast}{\itshape}
+
+\definecolor{rule}{gray}{0.75}
+\definecolor{muted}{gray}{0.4}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\keepXColumns
+\renewcommand{\arraystretch}{1.25}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape Bhagavad Gita}
+\fancyhead[R]{\small\itshape\leftmark}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+% \chapter{number}{devanagari name}{transliteration}{english meaning}
+\newcommand{\chapter}[4]{%
+  \clearpage
+  \markboth{Chapter #1 \textperiodcentered{} #3}{}%
+  \phantomsection
+  \addcontentsline{toc}{section}{Chapter #1: #3 \textperiodcentered{} #4}%
+  {\Large\bfseries Chapter #1 \quad {\sanskrit #2} \quad #3}\par
+  {\large\color{muted} #4}\par
+  \vspace{4pt}%
+}
+\newcommand{\chaptersummary}[1]{{\small\color{muted}\RaggedRight #1\par}\vspace{6pt}}
+\newcommand{\speaker}[1]{{\small\color{muted}#1}}
+\newcommand{\verseno}[1]{{\footnotesize\bfseries\color{muted}#1}\newline}
+\newcommand{\verserule}{\arrayrulecolor{rule}\hline\arrayrulecolor{black}}
+
+% Header rows of the verse table (tabularx itself is opened in the generated file,
+% because it must see a literal \end{tabularx}).
+\newcommand{\versehead}{%
+  \toprule
+  \textbf{Sanskrit} & \textbf{Transliteration} & \textbf{English (\translatorname)} & \textbf{Notes} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Sanskrit} & \textbf{Transliteration} & \textbf{English (\translatorname)} & \textbf{Notes} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endlastfoot
+}

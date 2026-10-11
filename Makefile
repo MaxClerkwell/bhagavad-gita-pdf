@@ -7,7 +7,7 @@ BUILD      := build
 NAME       := bhagavad-gita
 TEX        := $(BUILD)/$(NAME).tex
 PDF        := $(BUILD)/$(NAME).pdf
-JSON       := $(wildcard slok/*.json) $(wildcard chapter/*.json)
+JSON       := $(wildcard slok/*.json) $(wildcard chapter/*.json) $(wildcard translation/*.json)
 TEXINPUTS  := ./tex:
 
 .PHONY: all pdf tex clean
@@ -19,7 +19,7 @@ tex: $(TEX)
 $(TEX): tools/gen_tex.py $(JSON) | $(BUILD)
 	python3 tools/gen_tex.py --root . --translator $(TRANSLATOR) -o $@
 
-$(PDF): $(TEX) tex/preamble.tex tex/titlepage.tex
+$(PDF): $(TEX) tex/preamble.tex tex/titlepage.tex tex/halftitle.tex
 	TEXINPUTS="$(TEXINPUTS)" latexmk -lualatex -interaction=nonstopmode -halt-on-error \
 	  -output-directory=$(BUILD) $(TEX)
 

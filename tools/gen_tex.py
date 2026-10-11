@@ -28,9 +28,16 @@ def esc(s: str) -> str:
     return "".join(_ESC.get(c, c) for c in s)
 
 
+_VERSE_MARK = re.compile(r"\s*\|\|[\d०-९]+-[\d०-९]+\|\|\s*$")
+
+
 def lines(s: str) -> str:
-    """Join the lines of a verse with forced line breaks inside a table cell."""
-    parts = [esc(p.strip()) for p in s.strip().splitlines() if p.strip()]
+    """Join the lines of a verse with forced line breaks inside a table cell.
+
+    The trailing verse marker (||2-14|| or ||२-१४||) is dropped; the verse number
+    is already printed above the Sanskrit cell."""
+    s = _VERSE_MARK.sub("", s.strip())
+    parts = [esc(p.strip()) for p in s.splitlines() if p.strip()]
     return r"\newline ".join(parts)
 
 
@@ -56,6 +63,13 @@ def load_chapters(root: Path):
     return chapters
 
 
+def load_translation(root: Path, chapter: int) -> dict:
+    f = root / "translation" / f"chapter_{chapter}.json"
+    if not f.exists():
+        return {}
+    return json.loads(f.read_text(encoding="utf-8"))
+
+
 def load_verses(root: Path, chapter: int):
     files = root.glob(f"slok/bhagavadgita_chapter_{chapter}_slok_*.json")
     verses = [json.loads(f.read_text(encoding="utf-8")) for f in files]
@@ -75,6 +89,7 @@ def main():
     w(r"\input{preamble}")
     w(r"\newcommand{\translatorname}{%s}" % esc(TRANSLATORS[args.translator]))
     w(r"\begin{document}")
+    w(r"\input{halftitle}")
     w(r"\input{titlepage}")
     w(r"\tableofcontents")
     w(r"\clearpage")
@@ -86,13 +101,16 @@ def main():
         if ch.get("summary", {}).get("en"):
             w(r"\chaptersummary{%s}" % esc(ch["summary"]["en"]))
         w(r"\begin{tabularx}{\textwidth}{"
-          r">{\RaggedRight\arraybackslash}p{0.23\textwidth}"
-          r">{\RaggedRight\arraybackslash}p{0.21\textwidth}"
+          r">{\RaggedRight\arraybackslash}p{0.19\textwidth}"
+          r">{\RaggedRight\arraybackslash}p{0.17\textwidth}"
           r">{\RaggedRight\arraybackslash}X"
-          r">{\RaggedRight\arraybackslash}p{0.22\textwidth}}")
+          r">{\RaggedRight\arraybackslash\small}p{0.22\textwidth}"
+          r">{\RaggedRight\arraybackslash}p{0.13\textwidth}}")
         w(r"\versehead")
         last_speaker = None
+        own = load_translation(args.root, n)
         for v in load_verses(args.root, n):
+            mine = own.get(str(v["verse"]), {})
             speaker = v.get("speaker") or ""
             cell = ""
             if speaker and speaker != last_speaker:
@@ -102,7 +120,8 @@ def main():
             w(r"\verseno{%d.%d}" % (n, int(v["verse"])))
             w("  {\\sanskrit %s}" % cell)
             w("  & {\\iast %s}" % lines(v["transliteration"]))
-            w("  & %s" % english(v, args.translator))
+            w("  & %s" % (esc(mine["translation"]) if mine.get("translation") else english(v, args.translator)))
+            w("  & %s" % esc(mine.get("nuances", "")))
             w("  & \\\\")
             w(r"\verserule")
         w(r"\end{tabularx}")

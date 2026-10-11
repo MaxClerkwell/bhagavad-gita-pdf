@@ -70,8 +70,14 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 ## Building the PDF
 
 The repository ships a generator that renders all 700 verses as a landscape PDF
-with four columns: Sanskrit (Devanagari), IAST transliteration, English
-translation and an empty column for your own notes.
+with five columns: Sanskrit (Devanagari), IAST transliteration, an original
+English translation, a summary of how the reference translators (Sivananda,
+Purohit, Gambirananda, Adidevananda, Sankaranarayan, Prabhupada) differ in
+nuance, and an empty column for your own notes.
+
+The original translation and the nuance notes live in `translation/chapter_N.json`
+and were generated with Claude from the Sanskrit and the reference renderings.
+`TRANSLATOR` only selects the fallback used where no original entry exists.
 
 Requirements: Python 3, LuaLaTeX with `latexmk`, `ltablex`, `fontspec`, and the
 fonts *Gentium Plus* and *Noto Serif Devanagari* (Debian/Ubuntu:

@@ -43,6 +43,8 @@ def english(verse: dict, translator: str) -> str:
         entry = verse.get(key)
         if isinstance(entry, dict) and entry.get("et"):
             text = _VERSE_PREFIX.sub("", entry["et"].strip())
+            if "did not comment" in text.lower():
+                continue  # dataset placeholder, try the next translator
             return esc(text)
     return ""
 
